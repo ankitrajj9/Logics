@@ -1,0 +1,30 @@
+	@Override
+	public List<EmployeeMaster> getAllData(int start, int length,
+			String firstName, String Email, String DateOfJoining) throws ParseException {
+		  SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			  
+		    List<Criterion> list = new ArrayList<Criterion>();
+			if(null!=firstName && !firstName.isEmpty()){
+				list.add(Restrictions.eq("empName", firstName));
+			}
+			if(null!=Email && !Email.isEmpty()){
+	   			list.add(Restrictions.eq("email", Email));
+			}
+			if(null!=DateOfJoining && !DateOfJoining.isEmpty()){
+				list.add(Restrictions.eq("dateOfJoining",df.parse(DateOfJoining)));
+			}
+			Criteria cr=factory.getCurrentSession().createCriteria(EmployeeMaster.class);
+					
+			
+			cr.setFirstResult(start);
+		    cr.setMaxResults(length);
+			if(null!=list && !list.isEmpty())
+			for (Criterion criterion : list) {
+				if(null!=criterion)
+					cr.add(criterion);
+							
+				}
+		
+
+		return cr.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+	}
