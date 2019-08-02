@@ -1,0 +1,41 @@
+@RequestMapping(value = "/admin/getAllData", method = RequestMethod.POST)
+	@ResponseBody
+	public String getAllData(@RequestParam int draw, @RequestParam int start,
+			@RequestParam int length, @RequestParam String firstName,
+			@RequestParam String SearchEmail, @RequestParam String SearchDate)
+			throws ParseException, JSONException {
+
+		List<EmployeeMaster> master = empMasterService.getAllData(start,
+				length, firstName, SearchEmail, SearchDate);
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		JSONObject obj = new JSONObject();
+
+		obj.put("draw", draw);
+		obj.put("recordsTotal", empMasterService.getAll().size());
+		obj.put("recordsFiltered", empMasterService.getAll().size());
+
+		JSONArray array = new JSONArray();
+		obj.put("data", array);
+		for (EmployeeMaster employeeMaster : master) {
+
+			JSONArray arr = new JSONArray();
+			arr.put(employeeMaster.getId());
+			arr.put(employeeMaster.getEmpName());
+			arr.put(employeeMaster.getEmail());
+			arr.put(df.format(employeeMaster.getDateOfJoining()));
+			arr.put(employeeMaster.getMailStatus()==0?"<span>Sent</span>":"<span>Received</span>");
+			if(employeeMaster.getMailStatus()==0){
+				arr.put("<button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Delete' onclick='deleteDetails("+employeeMaster.getId()+");'><i class='fa fa-trash' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Resend' data-tooltip='true' onclick='resendMail("+employeeMaster.getId()+");'><i class='fa fa-paper-plane' aria-hidden='true'></i></button>");
+			}else{
+				arr.put("<button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Delete' onclick='deleteDetails("+employeeMaster.getId()+");'><i class='fa fa-trash' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Edit' onclick='editDetails("+employeeMaster.getId()+");'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='View' onclick='viewDetails("+employeeMaster.getId()+");'><i class='fa fa-eye' aria-hidden='true'></i></button>");
+				
+				
+			}
+			
+			array.put(arr);
+
+		}
+		return obj.toString();
+
+	}
+}
