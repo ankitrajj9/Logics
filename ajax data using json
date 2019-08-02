@@ -1,0 +1,65 @@
+@RequestMapping(value = "/admin/getData", method = RequestMethod.POST)
+	@ResponseBody
+	public String sentData(@RequestParam int draw, @RequestParam int start,
+			@RequestParam int length, @RequestParam String firstName,
+			@RequestParam String SearchEmail, @RequestParam String SearchDate,
+			@RequestParam String status) throws JSONException {
+
+	
+		
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        
+		JSONObject obj = new JSONObject();
+		
+		List<EmployeeMaster> master;
+		try {
+			master = empMasterService.getFilteredData(start,
+					length, firstName, SearchEmail,SearchDate,status);
+			obj.put("draw", draw);
+//			obj.put("recordsTotal",empMasterService.getAll().size());
+//			obj.put("recordsFiltered",master.size());
+			
+			JSONArray array = new JSONArray();
+			obj.put("data", array);
+			for (EmployeeMaster employeeMaster : master) {
+				JSONArray arr = new JSONArray();
+				if (employeeMaster.getMailStatus() == 0) {
+					obj.put("recordsTotal",empMasterService.getMailSent().size());
+					obj.put("recordsFiltered",empMasterService.getMailSent().size());
+					arr.put(employeeMaster.getId());
+					arr.put(employeeMaster.getEmpName());
+					arr.put(employeeMaster.getEmail());
+					arr.put(df.format(employeeMaster.getDateOfJoining()));
+					arr.put("<span>Sent</span>");
+					arr.put("<button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Delete' onclick='deleteDetails("+employeeMaster.getId()+");'><i class='fa fa-trash' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Resend' onclick='resendMail("+employeeMaster.getId()+");'><i class='fa fa-paper-plane' aria-hidden='true'></i></button>");
+					
+					
+					array.put(arr);
+					
+				} 
+				if (employeeMaster.getMailStatus() == 1) {
+					obj.put("recordsTotal",empMasterService.getMailReceive().size());
+					obj.put("recordsFiltered",empMasterService.getMailReceive().size());
+					arr.put(employeeMaster.getId());
+					arr.put(employeeMaster.getEmpName());
+					arr.put(employeeMaster.getEmail());
+					arr.put(df.format(employeeMaster.getDateOfJoining()));
+					arr.put("<span>Received</span>");
+					arr.put("<button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Delete' onclick='deleteDetails("+employeeMaster.getId()+");'><i class='fa fa-trash' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='Edit' onclick='editDetails("+employeeMaster.getId()+");'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button><button class='btn btn-default btn-sm hvr-ripple-out hvr-ripple-out-gray' data-toggle='tooltip' title='View' onclick='viewDetails("+employeeMaster.getId()+");'><i class='fa fa-eye' aria-hidden='true'></i></button>");
+					
+					
+					array.put(arr);
+					
+				}
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		
+
+
+		return obj.toString();
+
+	}
