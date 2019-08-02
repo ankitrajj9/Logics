@@ -1,0 +1,31 @@
+function dataReceived(recId){
+ tab.fnDestroy();
+ tab=$('#'+recId).dataTable({
+		  serverSide: true,
+		  searching : false,
+		  ordering : false,
+		  ajax: {
+		  url:'getData',
+		  type:'POST',
+		  data: function (d) {
+		      return $.extend({},d, {
+		    	         status: '1',
+		    	         firstName:$('#firstName').val(),
+		    	         SearchEmail:$('#SearchEmail').val(),
+		    	         SearchDate:$('#SearchDate').val()
+		    	         
+		      });
+		    }
+		  },
+ 		  drawCallback: function( settings ) {
+ 			  if($("#recData").DataTable().data().length<10){
+ 				 $("#recData").closest('.dataTables_wrapper').find('.dataTables_paginate').children().children().closest('.current').siblings().hide();
+ 				 $("#recData").closest('.dataTables_wrapper').find('.dataTables_paginate').children().last().addClass('disabled');
+ 				  
+ 			  }
+		    } 
+
+				
+		});
+
+}
