@@ -1,0 +1,2 @@
+@OneToMany(cascasde all,fetch lazy,mappedby) {use only these attributes}
+@ManyToOne(fetch) {use only these attributes}
