@@ -1,0 +1,3 @@
+<c:forEach var="stud" items="${list}" varStatus="status">
+		<tr <c:choose> <c:when test="${status.count % 2 eq 0}">style='background:grey'</c:when><c:otherwise>style='background:white'</c:otherwise></c:choose> >
+			
